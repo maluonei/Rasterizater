@@ -3,12 +3,12 @@
 #include "../head/projection.h"
 
 int main() {
-	Vector4f A(1, 2, 0.5, 1);
+	Vector4f A(1, 2, 0.5, 1); //Vertexes
 	Vector4f B(2, -2, -2, 1);
 	Vector4f C(-2, -2, -2, 1);
 	Vector4f D(-3, 3, -5, 1);
 
-	Vector3f ca(1, 0, 1);
+	Vector3f ca(1, 0, 1);  //Colors of vertexes
 	Vector3f cb(0, 1, 1);
 	Vector3f cc(0, 1, 0);
 	Vector3f cd(1, 0, 0);
