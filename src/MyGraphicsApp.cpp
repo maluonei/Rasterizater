@@ -1,4 +1,4 @@
-﻿#include "../head/triangle.h"
+#include "../head/triangle.h"
 #include "../head/quadrilateral.h"
 #include "../head/projection.h"
 
@@ -17,12 +17,7 @@ int main() {
 	int screen_height = 800;
 
 	cv::Mat M(screen_height, screen_width, CV_8UC3, cv::Scalar::all(255));
-
-	//Triangle triangle1(A, B, C, ca, cb, cc);
-	//Triangle triangle2(B, C, D, cd, cb, cc);
-	Triangle triangle(A, B, C, ca, cb, cc);
-	//Graphic* graphic = new Triangle(A, B, C, ca, cb, cc);
-	//Quadrilateral quadrilateral(A, B, C, D, ca, cb, cc, cd);
+	Triangle triangle(A, B, C, ca, cb, cc); //create a triangle
 
 	float eye_fov = 90;
 	float aspect_ratio = 4.0f / 3.0f;
@@ -44,16 +39,8 @@ int main() {
 	cout << veye << endl;
 	cout << "******************\n";
 
-	//triangle1.getPersprctiveProjection(Mpers);
-	//triangle1.drawSquare(M, vntest.w(), vftest.w());
-
-	//quadrilateral.getPersprctiveProjection(Mpers);
-	//quadrilateral.drawSquare(M, vntest.z(), vftest.z());
 	triangle.getPersprctiveProjection(Mpers);
-	//graphic->getPersprctiveProjection(Mpers);
-	//Graphic* graphic = &triangle;
 	Graphic* graphic = triangle.clip(vntest.z(), vftest.z());
-
 	if (graphic == nullptr) {
 		cout << "DEBUG: graphic is nullptr\n";
 	}
