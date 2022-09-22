@@ -49,4 +49,6 @@ int main() {
 	}
 	Mat M1 = adjust(M);
 	ShowImg(M1, "test");
+	
+	return 0;
 }
