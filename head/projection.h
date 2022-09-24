@@ -79,9 +79,9 @@ Matrix4f GetPerspectiveMatrix(float zNear, float zFar) {
 }
 
 Matrix4f GetPerspectiveProjectionMatrix(int screen_width, int screen_height, float eye_fov, float aspect_ratio, float zNear, float zFar) {
-	float angle = eye_fov * MY_PI / 180.0;
+	float angle = eye_fov * MY_PI / 180.0f;
 
-	float height = -2 * tan(angle / 2.0f) * zNear;
+	float height = -2.f * tan(angle / 2.0f) * zNear;
 	float width = height * aspect_ratio;
 	float depth = zFar - zNear;
 
@@ -98,11 +98,11 @@ Matrix4f GetPerspectiveProjectionMatrix(int screen_width, int screen_height, flo
 	Vector3f view_up;
 
 	eye_position <<
-		0, 0, 10;
+		0.f, 0.f, 10.f;
 	gaze_direction <<
-		0, 0, -1;
+		0.f, 0.f, -1.f;
 	view_up <<
-		0, 1, 0;
+		0.f, 1.f, 0.f;
 
 	Eigen::Matrix4f Mcam = GetCameraMatrix(eye_position, gaze_direction, view_up);
 	Eigen::Matrix4f P = GetPerspectiveMatrix(zNear, zFar);
@@ -110,7 +110,7 @@ Matrix4f GetPerspectiveProjectionMatrix(int screen_width, int screen_height, flo
 }
 
 Matrix4f GetOrthographicProjectionMatrix(int screen_width, int screen_height, float eye_fov, float aspect_ratio, float zNear, float zFar) {
-	float angle = eye_fov * MY_PI / 180.0;
+	float angle = eye_fov * MY_PI / 180.0f;
 
 	float height = 2 * tan(angle / 2.0f) * zNear;
 	float width = height * aspect_ratio;
@@ -129,11 +129,11 @@ Matrix4f GetOrthographicProjectionMatrix(int screen_width, int screen_height, fl
 	Vector3f view_up;
 
 	eye_position <<
-		0, 0, -5;
+		0, 0, -5.f;
 	gaze_direction <<
-		0, 0, -1;
+		0, 0, -1.f;
 	view_up <<
-		0, 1, 0;
+		0, 1.f, 0;
 
 	Eigen::Matrix4f Mcam = GetCameraMatrix(eye_position, gaze_direction, view_up);
 

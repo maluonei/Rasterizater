@@ -13,12 +13,12 @@ public:
 	virtual void drawLine(Mat& M) const {
 
 	}
-	virtual void drawSquare(Mat& M, float zNear, float zFar) const {
+	virtual void drawSquare(Mat& M, float zNear, float zFar, float*** zbuffer, Vector3f*** cbuffer) const {
 		Triangle t1(a, b, d, ca, cb, cd);
 		Triangle t2(b, c, d, cb, cc, cd);
 
-		t1.drawSquare(M, zNear, zFar);
-		t2.drawSquare(M, zNear, zFar);
+		t1.drawSquare(M, zNear, zFar, zbuffer, cbuffer);
+		t2.drawSquare(M, zNear, zFar, zbuffer, cbuffer);
 	}
 
 	virtual void getPersprctiveProjection(Matrix4f Mpers) {
@@ -40,14 +40,16 @@ private:
 
 
 Graphic* Triangle::clip(float zNear, float zFar) {
-	Graphic* graphic;
-
 	Vector4f q(0, 0, zNear, 1.0f);
 	Vector4f normal(0, 0, 1.0f, 0);
 
 	float za = a.z();
 	float zb = b.z();
 	float zc = c.z();
+
+	cout << "A:" << a.x() << "," << a.y() << "," << a.z() << endl;
+	cout << "B:" << b.x() << "," << b.y() << "," << b.z() << endl;
+	cout << "C:" << c.x() << "," << c.y() << "," << c.z() << endl;
 
 	float t1, t2;
 	float D = -normal.dot(q);

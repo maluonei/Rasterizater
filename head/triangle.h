@@ -61,14 +61,14 @@ public:
 		BresenhamLine(M, a.x(), a.y(), c.x(), c.y());
 	}
 
-	virtual void drawSquare(Mat& M, float zNear, float zFar) const {
-		//cout << a << endl;
-		//cout << b << endl;
-		//cout << c << endl;
+	virtual void drawSquare(Mat& M, float zNear, float zFar, float*** zbuffer, Vector3f*** cbuffer) const {
 		float xmin = min(a.x(), min(b.x(), c.x()));
 		float xmax = max(a.x(), max(b.x(), c.x()));
 		float ymin = min(a.y(), min(b.y(), c.y()));
 		float ymax = max(a.y(), max(b.y(), c.y()));
+		//float zmin = min(a.z(), min(b.z(), c.z()));
+		float zmax = max(a.z(), max(b.z(), c.z()));
+		if (zmax > zNear) return;
 
 		float falpha = f12(a.x(), a.y());
 		float fbeta = f20(b.x(), b.y());
@@ -78,35 +78,54 @@ public:
 		if (fbeta == 0) fbeta = 1e-5;
 		if (fgamma == 0) fgamma = 1e-5;
 
+		Vector2f samples[4] = {
+			{0.25f, 0.25f},
+			{0.25f, 0.75f},
+			{0.75f, 0.25f},
+			{0.75f, 0.75f}
+		};
+
+		//cout << "M.rows:" << M.rows << endl;
 		for (int x = xmin; x <= xmax; x++) {
 			for (int y = ymin; y <= ymax; y++) {
-				if (x >= 0 && x < M.rows && y >= 0 && y < M.cols) {
-					//质心坐标系转换, (x0,y0,z0) = alpha*pa+beta*pb+gamma*pc;
-					//缺少除以0的检查
-					float alpha = f12(x, y) / falpha;
-					if (alpha < 0) continue;
-					float beta = f20(x, y) / fbeta;
-					if (beta < 0) continue;
-					float gamma = f01(x, y) / fgamma;
-					if (gamma < 0) continue;
-
-					float zp = alpha * a.z() + beta * b.z() + gamma * c.z();
-					//cout << "zp:" << zp << endl;
-					if (zp >= zNear + (1e-5) || zp <= zFar - (1e-5)) {  //判断小于zNear和远于zFar的点
-						//cout << "zp again:" << zp << endl;
-						continue;
-					}
-
-					if (alpha >= 0 && beta >= 0 && gamma >= 0) {
-						if ((alpha > 0 || falpha * f12(-10, -10) > 0) &&   //和（-1，-1）在同一边的点的三角形，绘制这条边
-							(beta > 0 || fbeta * f20(-10, -10) > 0) &&
-							(gamma > 0 || fgamma * f01(-10, -10) > 0)) {
-							//if (alpha >= 0 && beta >= 0 && gamma >= 0) {
-							Vector3f c = alpha * ca + beta * cb + gamma * cc;
-							M.at<Vec3b>(x, y) = Vec3b(c.x() * 255.999, c.y() * 255.999, c.z() * 255.999);
+				Vector3f color(.0f, .0f, .0f);
+				float zpFinal = 0.0f;
+				int sampleNum = 0;
+				for (int i = 0; i < sample_per_pixel; i++) {
+					if (x >= 0 && x < M.cols && y >= 0 && y < M.rows) {
+						//质心坐标系转换, (x0,y0,z0) = alpha*pa+beta*pb+gamma*pc;
+						//缺少除以0的检查
+						float alpha = f12(x + samples[i].x(), y + samples[i].y()) / falpha;
+						if (alpha < 0) continue;
+						float beta = f20(x + samples[i].x(), y + samples[i].y()) / fbeta;
+						if (beta < 0) continue;
+						float gamma = f01(x + samples[i].x(), y + samples[i].y()) / fgamma;
+						if (gamma < 0) continue;
+						float zp = alpha * a.z() + beta * b.z() + gamma * c.z();
+						//cout << "zp:" << zp << endl;
+						if (zp >= zNear + (1e-5) || zp <= zFar - (1e-5)) {  //判断小于zNear和远于zFar的点
+							//cout << "zp again:" << zp << endl;
+							continue;
+						}
+						if (zp > zbuffer[x][y][i]) {
+							if (alpha >= 0 && beta >= 0 && gamma >= 0) {
+								if ((alpha > 0 || falpha * f12(-10, -10) > 0) &&   //和（-1，-1）在同一边的点的三角形，绘制这条边
+									(beta > 0 || fbeta * f20(-10, -10) > 0) &&
+									(gamma > 0 || fgamma * f01(-10, -10) > 0)) {
+									zbuffer[x][y][i] = zp;
+									cbuffer[x][y][i] = alpha * ca + beta * cb + gamma * cc;
+									//cout << "cbuffer:" << cbuffer[x][y][i] << endl;
+								}
+							}
 						}
 					}
 				}
+				//float zp = zpFinal / sampleNum;
+				//color /= sampleNum;
+				//if (zp >= zbuffer[x][y]) {
+				//	zbuffer[x][y] = zp;
+				//	M.at<Vec3b>(x, y) = Vec3b(int(color.x() * 255.999), int(color.y() * 255.999), int(color.z() * 255.999));
+				//}
 			}
 		}
 	}

@@ -3,6 +3,7 @@
 #define GRAPHIC_H
 
 #include "rasterization.h"
+#include "basic.h"
 
 #include <iostream>
 #include <math.h>
@@ -40,7 +41,7 @@ Mat adjust(Mat M1) {
 class Graphic {
 public:
 	virtual void drawLine(Mat& M) const = 0;
-	virtual void drawSquare(Mat& M, float zNear, float zFar) const = 0;
+	virtual void drawSquare(Mat& M, float zNear, float zFar, float*** zbuffer, Vector3f*** cbuffer) const = 0;
 	virtual void getPersprctiveProjection(Matrix4f Mpers) = 0;
 };
 
